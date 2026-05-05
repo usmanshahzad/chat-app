@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1777616736283,
+    "details": {
+      "name": "Usman Shahzad",
+      "phone": "03205270324"
+    },
+    "token": "abc123",
+    "currentActivePlan": {
+      "planPrice": "10",
+      "planId": "2",
+      "planName": "Pro"
+    }
+  },
+  {
+    "id": 1777616736284,
+    "details": {
+      "name": "John",
+      "phone": "03205270325"
+    },
+    "token": "abc456",
+    "currentActivePlan": {
+      "planPrice": "20",
+      "planId": "3",
+      "planName": "Premium"
+    }
+  },
+  {
+    "id": 1777616736285,
+    "details": {
+      "name": "Abdar",
+      "phone": "0301010101"
+    },
+    "token": "3b51cab4c11486ee13a836f7b984e61a9ede37c5bef556006406c2bb45fa1d8a"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "participants": [{ "id": 1777616736283, "name": "Usman Shahzad" }, { "id": 1777616736284, "name": "John" }],
+    "lastMessage": "Hello!"
+  },
+  {
+    "id": "2",
+    "participants": [{ "id": 1777616736283, "name": "Usman Shahzad" }, { "id": 1777616736284, "name": "John" }],
+    "lastMessage": "How are you?"
+  }
+]
