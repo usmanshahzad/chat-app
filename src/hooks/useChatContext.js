@@ -44,17 +44,14 @@ export const ChatProvider = ({ children }) => {
     init();
   }, []);
 
-  const login = (name, phone) => {
-    if (!phone) return alert("Enter phone number");
-    if (!name) return alert("Enter name");
+  const login = (loginData) => {
+    if (!loginData.phone) return alert("Phone number is Required");
+    if (!loginData.password) return alert("Name is Required");
 
     setIsLoading(true);
 
     try {
-      const userPayload = {
-        name: name,
-        phone: phone
-      }
+      const userPayload = loginData
 
       fetch("/api/login", {
         method: "POST",
@@ -67,13 +64,13 @@ export const ChatProvider = ({ children }) => {
         .then(data => {
           if (data.status === 200) {
             localStorage.setItem("token", data?.data?.token);
-            localStorage.setItem("user", JSON.stringify(data?.data?.details || {}));
-            localStorage.setItem("user_id", data?.data?.id || null);
+            localStorage.setItem("user", JSON.stringify(data?.data?.user || {}));
+            localStorage.setItem("user_id", data?.data?.user?.id || null);
             localStorage.setItem("active_plan", JSON.stringify(data?.data?.currentActivePlan || {}));
 
             setToken(data?.data?.token);
-            setUser(data?.data?.details);
-            setUserId(data?.data?.id);
+            setUser(data?.data?.user);
+            setUserId(data?.data?.user?.id);
             setActivePlan(data?.data?.currentActivePlan);
 
             if (!data?.data?.currentActivePlan?.planId) {
@@ -86,6 +83,51 @@ export const ChatProvider = ({ children }) => {
               return;
             }
           }
+        })
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = (loginData) => {
+    if (!loginData.phone) return alert("Phone Number is Required");
+    if (!loginData.name) return alert("Name is Required");
+    if (!loginData.password) return alert("Password is Required");
+
+    setIsLoading(true);
+
+    try {
+      const userPayload = loginData
+
+      fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userPayload)
+      })
+        .then(res => {
+          const status = res.status;
+
+          return res.json().then(data => ({ data, status }));
+        })
+        .then(data => {
+          console.log("data", data);
+          if (data.status === 200) {
+            router.replace("/login");
+            return;
+          }
+
+          if (data.status === 400) {
+            const messages = data?.data?.errors;
+            
+            const errorText = Object.values(messages).join("\n");
+            alert(errorText)
+          }
+
         })
 
     } catch (err) {
@@ -110,7 +152,7 @@ export const ChatProvider = ({ children }) => {
   };
 
   return (
-    <ChatContext.Provider value={{ selectedChat, setSelectedChat, login, logout, user, userId, token, isLoading, activePlan, setActivePlan }}>
+    <ChatContext.Provider value={{ selectedChat, setSelectedChat, login, register, logout, user, userId, token, isLoading, activePlan, setActivePlan }}>
       {children}
     </ChatContext.Provider>
   )

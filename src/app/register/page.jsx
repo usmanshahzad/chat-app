@@ -5,17 +5,17 @@ import { Box, TextField, Button, Typography, Paper } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function PhoneLogin() {
+export default function Register() {
   const [loginData, setLoginData] = useState({
     name: "",
     phone: "",
     password: ""
   });
   const router = useRouter();
-  const { login, isLoading } = useChat();
+  const { register, isLoading } = useChat();
 
-  const handleLogin = () => {
-    login(loginData);
+  const handleRegister = () => {
+    register(loginData);
   }
 
   return (
@@ -40,7 +40,7 @@ export default function PhoneLogin() {
           Login
         </Typography>
 
-        {/* <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" color="text.secondary" mb={2}>
           Enter your name to continue
         </Typography>
 
@@ -51,10 +51,10 @@ export default function PhoneLogin() {
           value={loginData.name}
           onChange={(e) => setLoginData((prev) => ({ ...prev, name: e.target.value }))}
           sx={{ mb: 2 }}
-        /> */}
+        />
         
         <Typography variant="body2" color="text.secondary" mb={2}>
-          Enter your phone number
+          Enter your phone number to continue
         </Typography>
 
         <TextField
@@ -67,7 +67,7 @@ export default function PhoneLogin() {
         />
 
         <Typography variant="body2" color="text.secondary" mb={2}>
-          Enter your Password
+          Enter your new Password to continue
         </Typography>
 
         <TextField
@@ -83,23 +83,23 @@ export default function PhoneLogin() {
         <Button
           fullWidth
           variant="contained"
-          onClick={handleLogin}
+          onClick={handleRegister}
           disabled={isLoading}
         >
-          {isLoading ? "Login..." : "Login"}
+          {isLoading ? "Register..." : "Register"}
         </Button>
 
         <Box sx={{ marginTop: "10px", display: "flex", justifyContent: "space-between" }}>
           <Typography variant="body2" color="text.secondary" mb={2}>
-            Not a member yet?
+            Already have an Account
           </Typography>
 
           <Typography
             variant="button"
             mb={2}
             sx={{ color: "rgb(9, 118, 190)", cursor: "pointer" }}
-            onClick={() => router.replace("/register")}>
-            Register
+            onClick={() => router.replace("/login")}>
+            Login
           </Typography>
         </Box>
       </Paper>

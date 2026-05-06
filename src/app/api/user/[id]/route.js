@@ -1,3 +1,4 @@
+import User from "@/models/User";
 import { readFile } from "@/utils/fileDB";
 
 
@@ -5,8 +6,7 @@ export async function GET(request, context) {
   const { params } = context;
   const { id } = await params;
 
-  const users = readFile("users");
-  const currentUser = (users || []).find((u) => u.id == id);
+  const user = await User.findById(id);
 
-  return Response.json(currentUser || {});
+  return Response.json(user || {});
 }

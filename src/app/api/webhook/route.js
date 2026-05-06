@@ -1,3 +1,5 @@
+import connectDB from "@/libs/mongodb";
+import User from "@/models/User";
 import { readFile, writeFile } from "@/utils/fileDB";
 import Stripe from "stripe";
 
@@ -24,20 +26,12 @@ export async function POST(request) {
         const { metadata } = session;
         const { userId, ...rest } = metadata;
 
-        const users = readFile("users");
-        
-        const updatedUsers = (users || []).map((u) => {
-            if (u?.id == metadata?.userId) {
-                return {
-                    ...u,
-                    currentActivePlan: rest
-                }
-            }
+        await connectDB();
 
-            return u;
-        })
+        const user = await User.findById(userId);
+        user.currentActivePlan = rest
 
-        writeFile("users", updatedUsers);
+        user.save();
     }
 
     return new Response("OK");

@@ -1,53 +1,43 @@
 import crypto from "crypto";
 import { readFile, writeFile } from "@/utils/fileDB";
+import connectDB from "@/libs/mongodb";
+import User from "@/models/User";
+import { handleError } from "@/utils/errorHandler";
+import { signToken } from "@/libs/auth";
 
 export async function POST(request) {
   try {
+    await connectDB();
     const body = await request.json();
-    const { phone, name } = body;
+    const { phone, password } = body;
 
-    if (!phone) {
-      return Response.json(
-        { error: "Phone is Required", status: 400 },
-      );
+    const user = await User.findOne({ phone, isActive: true });
+
+    if (!user || !(await user.comparePassword(password))) {
+      return Response.json({ error: "Invalid credentials", }, { status: 401 });
     }
 
-    const users = readFile("users");
-    const token = crypto.randomBytes(32).toString("hex");
+    user.lastLogin = new Date();
 
-    const existingUser = (users || []).find(user => user?.details?.phone === phone);
-    
-    if (existingUser) {
-        existingUser.token = token;
-        return Response.json(
-            { data: existingUser, status: 200, message: "Welcome Back Login Successfully" },
-        );
-    }
+    await user.save();
 
-    const newUser = {
-      id: Date.now(),
-      details: {
-        name,
-        phone
+    const token = signToken({ id: user._id, name: user.name, phone: user.phone });
+
+    return Response.json({
+      data: {
+        token,
+        user: { id: user._id, name: user.name, phone: user.phone },
       },
-      token
-    }
-
-    users.push(newUser);
-
-    writeFile("users", users);
-
-    return Response.json(
-        { data: newUser, status: 200, message: "New User Added and Login Successfully" },
-    );
+      status: 200,
+      message: "Welcome Back Login Successful"
+    })
 
 
   } catch (error) {
     console.error("Login Error:", error);
+    
+    const { status, body } = handleError(error);
 
-    return Response.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    );
+    return Response.json(body, { status });
   }
 }
