@@ -44,8 +44,8 @@ export async function POST(request) {
                 message: "Thank you for your purchase!"
             }
         },
-        success_url: "http://localhost:3000/chat",
-        cancel_url: "http://localhost:3000/plans",
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/chat`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/plans`,
     });
 
     return Response.json({ url: session.url });
