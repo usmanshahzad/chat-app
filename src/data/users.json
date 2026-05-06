@@ -5,12 +5,7 @@
       "name": "Usman Shahzad",
       "phone": "03205270324"
     },
-    "token": "abc123",
-    "currentActivePlan": {
-      "planPrice": "10",
-      "planId": "2",
-      "planName": "Pro"
-    }
+    "token": "abc123"
   },
   {
     "id": 1777616736284,
@@ -18,12 +13,7 @@
       "name": "John",
       "phone": "03205270325"
     },
-    "token": "abc456",
-    "currentActivePlan": {
-      "planPrice": "20",
-      "planId": "3",
-      "planName": "Premium"
-    }
+    "token": "abc456"
   },
   {
     "id": 1777616736285,
