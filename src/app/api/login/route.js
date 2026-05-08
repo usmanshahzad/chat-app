@@ -26,10 +26,10 @@ export async function POST(request) {
     return Response.json({
       data: {
         token,
-        user: { id: user._id, name: user.name, phone: user.phone },
+        user: { id: user._id, name: user.name, phone: user.phone, lastLogin: user.lastLogin, currentActivePlan: user.currentActivePlan },
+        message: "Welcome Back Login Successful"
       },
       status: 200,
-      message: "Welcome Back Login Successful"
     })
 
 

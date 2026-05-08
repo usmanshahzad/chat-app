@@ -1,6 +1,6 @@
 import { useChat } from "@/hooks/useChatContext";
+import pusherClient from "@/libs/pusher";
 import { Box, Paper, Typography } from "@mui/material";
-import Pusher from "pusher-js";
 import { useEffect, useState } from "react";
 
 export default function MessageList() {
@@ -10,42 +10,31 @@ export default function MessageList() {
   const { selectedChat, userId } = useChat();
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-      cluster: "ap2"
-    })
-
-    const channel = pusher.subscribe("chat-room");
-    
-    channel.bind("new-message", (data) => {
+    const channel = pusherClient.subscribe(`chat-${selectedChat?._id}`);
+    const handleNewMessage = (data) => {
       setMessages((prev) => [...prev, data])
-    })
-
-    // const channel2 = pusher.subscribe("private-chat-room");
-
-    // channel2.bind("client-typing", (data) => {
-    //   setTypingUser(data.username);
-    //   setIsTyping(true);
-
-    //   setTimeout(() => setIsTyping(false), 2000);
-    // });
+    }
+    
+    channel.bind("new-message", handleNewMessage);
 
     return () => {
-      pusher.unsubscribe("chat-room");
-      // pusher.unsubscribe("private-chat-room");
+      channel.unbind("new-message", handleNewMessage);
+      pusherClient.unsubscribe(`chat-${selectedChat?._id}`);
     }
   }, []);
 
   useEffect(() => {
-    fetch(`/api/messages/${selectedChat?.id}`)
+    fetch(`/api/messages/${selectedChat?._id}`)
       .then(res => res.json())
-      .then(data => setMessages(data));
-  }, [selectedChat?.id]);
+      .then(data => setMessages(data?.data || []));
+  }, [selectedChat?._id]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {/* Sent message */}
       {(messages || []).map((message, i) => {
-        const myMsg = message?.senderId == userId || false;
+        const myMsg = message?.sender?._id == userId || false;
+        console.log("message", message, myMsg);
         return (
           <Box key={i} sx={{ display: "flex", ...(myMsg ? { justifyContent: "flex-end" } : { justifyContent: "flex-start" }) }}>
             <Paper sx={{ px: 2, py: 1, ...(myMsg ? { bgcolor: "primary.main", color: "#fff" } : { bgcolor: "#eee" }) }}>

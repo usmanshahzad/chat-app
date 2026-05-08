@@ -12,8 +12,6 @@ export async function POST(req) {
   const body = await req.formData();
   const socketId = body.get("socket_id");
   const channel = body.get("channel_name");
-
-  // Logic: Verify user session here (e.g., via NextAuth or cookies)
   
   const authResponse = pusher.authorizeChannel(socketId, channel);
   return Response.json(authResponse);

@@ -5,23 +5,17 @@ import { useState } from "react";
 export default function MessageInput() {
   const [newMessage, setNewMessage] = useState("");
   const { selectedChat, user, userId } = useChat();
-  const userName = user?.name || "";
-  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-    cluster: "ap2",
-    authEndpoint: "/api/pusher/auth",
-  })
 
   const addNewMessage = () => {
     if (Object.keys(selectedChat || {}).length === 0) return;
 
     const messagePayload = {
-      chatId: selectedChat?.id,
-      sender: userName,
-      userId,
+      chat: selectedChat?._id,
+      sender: userId,
       text: newMessage
     }
 
-    fetch("/api/addMessages", {
+    fetch("/api/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

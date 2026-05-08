@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@/hooks/useChatContext";
+import pusherClient from "@/libs/pusher";
 import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -9,12 +10,25 @@ export default function Sidebar() {
   const { selectedChat, setSelectedChat, userId } = useChat();
 
   useEffect(() => {
-    fetch(`/api/chats/${userId}`)
-      .then(res => res.json())
-      .then(data => setChats(data));
+    const channel = pusherClient.subscribe(`user-${userId}`);
+    const handleNewChat = (data) => {
+      console.log("new chat received", data);
+      setChats((prev) => [...prev, data])
+    }
+
+    channel.bind("new-chat", handleNewChat)
+
+    return () => {
+      channel.unbind("new-chat", handleNewChat);
+      pusherClient.unsubscribe(`user-${userId}`);
+    }
   }, []);
 
-  // const filterMyChats = (chats || []).filter((chat) => chat?.participants.some((p) => p?.id === userId));
+  useEffect(() => {
+    fetch(`/api/chat/${userId}`)
+      .then(res => res.json())
+      .then(data => setChats(data?.data));
+  }, []);
 
   return (
     <Box
@@ -31,7 +45,7 @@ export default function Sidebar() {
 
       <List>
         {(chats || []).map((chat, i) => {
-          const otherUser = (chat.participants || []).find((p) => p?.id !== userId);
+          const otherUser = (chat.participants || []).find((p) => p?._id !== userId);
 
           return (
           <ListItem
@@ -40,7 +54,7 @@ export default function Sidebar() {
             sx={{
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f5f5f5" },
-              ...(selectedChat?.id === chat?.id ? { backgroundColor: "#f5f5f5" } : {}),
+              ...(selectedChat?._id === chat?._id ? { backgroundColor: "#f5f5f5" } : {}),
             }}
             onClick={(() => setSelectedChat(chat))}
           >

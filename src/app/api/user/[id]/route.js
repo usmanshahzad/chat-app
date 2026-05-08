@@ -1,12 +1,12 @@
+import connectDB from "@/libs/mongodb";
 import User from "@/models/User";
-import { readFile } from "@/utils/fileDB";
-
 
 export async function GET(request, context) {
+  await connectDB();
   const { params } = context;
   const { id } = await params;
 
   const user = await User.findById(id);
 
-  return Response.json(user || {});
+  return Response.json({ data: user || {}, message: "Ok" },);
 }

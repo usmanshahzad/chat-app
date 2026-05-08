@@ -10,10 +10,15 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useChat } from "@/hooks/useChatContext";
+import { useState } from "react";
+import ChatModal from "../modals/chatModal";
 
 export default function Header() {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const { token, activePlan, logout } = useChat();
+  const { token, activePlan, logout, userId, allUsers } = useChat();
+
+  console.log("allUsers", allUsers);
 
   const handleLogout = () => {
     logout();
@@ -44,6 +49,24 @@ export default function Header() {
           <Button color="inherit" onClick={() => router.push("/plans")}>
             Plans
           </Button>
+
+          {/* Start New Chat */}
+          <Button
+            variant="contained"
+            onClick={() => setOpen(true)}
+          >
+            New Chat
+          </Button>
+
+          <ChatModal
+            open={open}
+            onClose={() => setOpen(false)}
+            users={allUsers}
+            loggedInUserId={userId}
+            onChatCreated={(chat) => {
+              console.log("Created Chat:", chat);
+            }}
+          />
 
           {/* Logout */}
           {token && (

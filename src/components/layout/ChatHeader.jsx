@@ -2,7 +2,9 @@ import { useChat } from "@/hooks/useChatContext";
 import { Box, Typography, Divider } from "@mui/material";
 
 export default function ChatHeader() {
-  const { selectedChat } = useChat();
+  const { selectedChat, userId } = useChat();
+  const otherUser = (selectedChat.participants || []).find((p) => p?._id !== userId);
+  const chatName = selectedChat?.isGroupChat ? selectedChat.groupName : otherUser?.name || "John Doe";
 
   return (
     <>
@@ -15,7 +17,7 @@ export default function ChatHeader() {
         }}
       >
         <Typography variant="h6" fontWeight={600}>
-          {selectedChat?.name || "John Doe"}
+          {chatName}
         </Typography>
       </Box>
       <Divider />

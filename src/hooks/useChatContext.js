@@ -12,6 +12,7 @@ export const ChatProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activePlan, setActivePlan] = useState({});
+  const [allUsers, setAllUsers] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,11 +32,20 @@ export const ChatProvider = ({ children }) => {
         const res = await fetch(`/api/user/${userId}`);
         const updatedUser = await res.json();
 
-        if (updatedUser?.currentActivePlan) {
-          localStorage.setItem("active_plan", JSON.stringify(updatedUser?.currentActivePlan || {}));
+        if (updatedUser?.data?.currentActivePlan) {
+          localStorage.setItem("active_plan", JSON.stringify(updatedUser?.data?.currentActivePlan || {}));
 
-          setActivePlan(updatedUser.currentActivePlan || {});
+          setActivePlan(updatedUser?.data.currentActivePlan || {});
         }
+      }
+
+      if (userId) {
+        const res = await fetch(`/api/user`);
+        const users = await res.json();
+
+        console.log("users", users);
+
+        setAllUsers(users?.data || []);
       }
 
       setIsLoading(false);
@@ -152,7 +162,7 @@ export const ChatProvider = ({ children }) => {
   };
 
   return (
-    <ChatContext.Provider value={{ selectedChat, setSelectedChat, login, register, logout, user, userId, token, isLoading, activePlan, setActivePlan }}>
+    <ChatContext.Provider value={{ selectedChat, setSelectedChat, login, register, logout, user, allUsers, userId, token, isLoading, activePlan, setActivePlan }}>
       {children}
     </ChatContext.Provider>
   )
